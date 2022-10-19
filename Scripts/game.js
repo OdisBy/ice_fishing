@@ -30,7 +30,7 @@ var minhocaIcon = new Obj(0, 0, 120, 120, 0, 'Assets/iconminhoca.png')
 var gameOver = false
 const peixesVivos = []
 const caranguejoArray = []
-
+var tempoRecargaTubarao = 0
 
 //PEGAR O MOV DO MOUSE E MOVER A LARGURA DA LINHA COM ISSO E MOVER ISCA
 document.addEventListener('mousemove', (event) => {
@@ -80,6 +80,9 @@ function hud(){
 //timer
 function timerContando() {
     player.timer -= 1
+}
+function timerRecargaTubarao() {
+  tempoRecargaTubarao -= 1
 }
 
 
@@ -285,10 +288,14 @@ function peixeFuncao() {
                 console.log('Pegou bota')
                 break
               case 'Tubarao':
-                player.iscas -= 1
-                linha.height = 150
-                linha.y = 10
-                console.log("Tubarao comeu isca")
+                if(tempoRecargaTubarao < 0){
+                  tempoRecargaTubarao = 3
+                  player.iscas -= 1
+                  linha.height = 150
+                  linha.y = 10
+                  console.log("Tubarao comeu isca")
+                }
+
                 break
               case 'Lata':
                 iscaObj.pescado = true
@@ -299,12 +306,15 @@ function peixeFuncao() {
           
           // Caso ele tenha fisgado um peixe já, porém encostar num tubarão ele perderá o peixe e a isca
           else {
-            if(peixin.objetoNome == "Tubarao"){
-              player.iscas -= 1
-              linha.height = 150
-              linha.y = 10
-              iscaObj.pescado = false
-              console.log("Tubarao comeu isca")
+            if(peixin.objetoNome == "Tubarao"){ 
+              if(tempoRecargaTubarao < 0){
+                tempoRecargaTubarao = 3
+                player.iscas -= 1
+                linha.height = 150
+                linha.y = 10
+                iscaObj.pescado = false
+                console.log("Tubarao comeu isca")
+              }
             }
           }
         
@@ -359,8 +369,10 @@ function main() {
   pincel.clearRect(0, 0, 1200, 720)
   mapaDesenho()
   peixeFuncao()
+  console.log(tempoRecargaTubarao)
 }
 criarCaranguejo()
 setInterval(timerContando, 1000)
+setInterval(timerRecargaTubarao, 1000)
 setInterval(criarPeixe, 2500)
 setInterval(main, 10)
