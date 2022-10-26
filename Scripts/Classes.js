@@ -48,6 +48,20 @@ class Obj{
 
 }
 
+class Img{
+    constructor(x, y, width, height, image){
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.image = image;
+    }
+    desenha(){
+        var img = new Image();
+        img.src = this.image;
+        pincel.drawImage(img, this.x, this.y, this.width, this.height);
+    }
+}
 
 class Player extends Obj{
     lifes = 3

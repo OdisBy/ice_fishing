@@ -11,20 +11,19 @@ var linha = new LinhaVaraPesca(
   'Assets/linha.png'
 )
 var iscaObj = new Isca(658, 5, 60, 60, 3, 'Assets/minhoca.png')
-var chao = new Obj(0, 150, 1400, 300, 0, 'Assets/chao.png')
-var bauPeixe = new Obj(400, 140, 132, 116, 0, 'Assets/baupeixe.png')
+var chao = new Img(0, 150, 1400, 300, 'Assets/chao.png')
+var bauPeixe = new Img(400, 140, 132, 116, 'Assets/baupeixe.png')
 var player = new Player(670, 10, 240, 220, 0, 'Assets/idle.png')
-var linhaFix = new Obj(
+var linhaFix = new Img(
   tela.width / 2 - 50,
   5,
   300,
   150,
-  3,
   'Assets/linha.png'
 )
 
 //ICON
-var minhocaIcon = new Obj(0, 0, 120, 120, 0, 'Assets/iconminhoca.png')
+var minhocaIcon = new Img(0, 0, 120, 120, 'Assets/iconminhoca.png')
 
 //VARIAVEIS DO JOGO
 var gameOver = false
