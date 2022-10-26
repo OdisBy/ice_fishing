@@ -24,6 +24,15 @@ var linhaFix = new Img(
 
 var iscandoPeixe = new Audio('sound/iscandopeixe.wav')
 var peixeColetado = new Audio('sound/peixeguardado.wav')
+var caranguejoSound = new Audio('sound/caranguejo.wav')
+var tubaraoSound = new Audio('sound/tubarao.wav')
+var menuMusic = new Audio('sound/menu.wav')
+menuMusic.loop = true
+var inGameMusic = new Audio('sound/inGame.mp3')
+inGameMusic.loop = true
+var gameOverMusic = new Audio('sound/gameOver.wav')
+gameOverMusic.loop = true
+
 
 
 //MENU
@@ -44,6 +53,7 @@ var gerarPeixe = new invocarPeixe()
 //Buttons
 //Menu inicial
 var jogarButton = new Button(940, 615, 205, 57, 'Assets/empty.png')
+var gameOverButton = new Button(490, 500, 230, 70, 'Assets/redAsset.jpg')
 
 
 //PEGAR O MOV DO MOUSE E MOVER A LARGURA DA LINHA COM ISSO E MOVER ISCA
@@ -70,9 +80,23 @@ document.addEventListener('click', (event) => {
       if(jogarButton.clickButton(x, y)){
           player.timer = 300
           player.tempoTubarao = 5
+          player.score = 0
           gerarPeixe.gerarPeixe()
           rodandoJogo = true;
+          menuMusic.pause()
       }
+  }
+  if(gameOver){
+    if(gameOverButton.clickButton(x, y)){
+      player.timer = 300
+      player.tempoTubarao = 5
+      player.score = 0
+      gerarPeixe.gerarPeixe()
+      gameOver = false
+      rodandoJogo = true
+      gerarPeixe.peixesVivos.length = 0
+      gameOverMusic.pause()
+    }
   }
 });
 
@@ -101,6 +125,22 @@ function hud(){
   pincel.fillText(player.iscas, 100, 80);
 
   pincel.fillText(player.getTimer(), 500, 80);
+
+  pincel.fillText(player.score, 1000, 80)
+}
+
+function desenhaGameOver(){
+  pincel.clearRect(0, 0, 1200, 750)
+  
+  pincel.fillStyle = '#E5FFFF'
+  pincel.fillRect(0, 0, 1200, 750)
+
+  pincel.fillStyle = '#000000'
+  pincel.font = "60px Arial";
+  pincel.fillText("Fim de jogo!", 450, 150)
+  pincel.fillText("Score: " + player.score, 500 , 350)
+  gameOverButton.desenha()
+  pincel.fillText("Jogar novamente", 500, 550, 200, 200)
 }
 
 
@@ -108,6 +148,18 @@ function hud(){
 function timerContando() {
     player.timer -= 1
     player.tempoTubarao -= 1
+
+    if(player.timer < 0){
+      gameOver = true
+      rodandoJogo = false
+      inGameMusic.pause()
+    }
+
+    if(player.iscas == 0){
+      gameOver = true
+      rodandoJogo = false
+      inGameMusic.pause()
+    }
 }
 
 function getNovoPeixe() {
@@ -117,20 +169,21 @@ function getNovoPeixe() {
 
 function main() {
   if(rodandoJogo){
+    inGameMusic.play()
     pincel.clearRect(0, 0, 1200, 720)
     mapaDesenho()
     gerarPeixe.peixeFuncao()
-    console.log(linha.x)
   } else if(gameOver){
-    
+    desenhaGameOver();
+    gameOverMusic.play()
   }else{
     telaMenu.desenha();
+    menuMusic.play()
   }
   
   
   
 }
-// criarCaranguejo()S
 setInterval(getNovoPeixe, 2500)
 setInterval(timerContando, 1000)
 setInterval(main, 10)

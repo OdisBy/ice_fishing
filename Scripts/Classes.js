@@ -3,6 +3,7 @@ class Obj {
   timer = 0
   pescado = false
   coletado = false
+  score = 0
 
   tiposPossiveisObjeto = ['Peixes', 'Lixos', 'Inimigos', 'Minhocas']
   peixesPossiveis = ['Salmao', 'Tilapia', 'Pacu']
@@ -63,6 +64,7 @@ class Img {
 }
 
 class Button extends Img {
+
   clickButton(x, y) {
     if (
       x > this.x &&
@@ -73,10 +75,15 @@ class Button extends Img {
       return true
     }
   }
+
+  desenha() {
+    var img = new Image()
+    img.src = this.image
+    pincel.drawImage(img, this.x, this.y, this.width, this.height)
+  }
 }
 
 class Player extends Obj {
-  lifes = 3
   peixesPescados = 0
   timer = 300
   iscas = 3
@@ -161,6 +168,7 @@ class Salmao extends Obj {
   speed = 40
   tipoObj = this.tiposPossiveisObjeto[0]
   objetoNome = this.peixesPossiveis[0]
+  score = 5
 
   imgPescado = 'Assets/salmaoPescado.png'
 }
@@ -169,6 +177,7 @@ class Tilapia extends Obj {
   speed = 30
   tipoObj = this.tiposPossiveisObjeto[0]
   objetoNome = this.peixesPossiveis[1]
+  score = 1
 
   imgPescado = 'Assets/tilapiaPescado.png'
 }
@@ -177,6 +186,7 @@ class Pacu extends Obj {
   speed = 40
   tipoObj = this.tiposPossiveisObjeto[0]
   objetoNome = this.peixesPossiveis[2]
+  score = 3
 
   imgPescado = 'Assets/pacuPescado.png'
 }
@@ -356,6 +366,7 @@ class invocarPeixe {
                     player.iscas -= 1
                     linha.height = 150
                     linha.y = 10
+                    tubaraoSound.play()
                     console.log('Tubarao comeu isca')
                   }
                   console.log('Tubarao comeu isca')
@@ -376,6 +387,7 @@ class invocarPeixe {
                   player.iscas -= 1
                   linha.height = 150
                   linha.y = 10
+                  tubaraoSound.play()
                   console.log('Tubarao comeu isca')
                 }
               }
@@ -403,6 +415,7 @@ class invocarPeixe {
             } else {
               player.peixesPescados += 1
               peixin.coletado = true
+              player.score += peixin.score
               iscaObj.pescado = false
               peixeColetado.play()
             }
@@ -418,6 +431,7 @@ class invocarPeixe {
             linha.height = 150
             linha.y = 10
             iscaObj.pescado = false
+            caranguejoSound.play()
             console.log('caranguejo comeu isca')
           }
         }
