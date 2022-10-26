@@ -23,6 +23,13 @@ var linhaFix = new Obj(
   'Assets/linha.png'
 )
 
+var iscandoPeixe = new Audio('sound/iscandopeixe.wav')
+var peixeColetado = new Audio('sound/peixeguardado.wav')
+
+
+//MENU
+var telaMenu = new Obj(0, 0, 1200, 720, 0, 'Assets/menu.png')
+
 //ICON
 var minhocaIcon = new Obj(0, 0, 120, 120, 0, 'Assets/iconminhoca.png')
 
@@ -30,7 +37,7 @@ var minhocaIcon = new Obj(0, 0, 120, 120, 0, 'Assets/iconminhoca.png')
 var gameOver = false
 const peixesVivos = []
 const caranguejoArray = []
-var tempoRecargaTubarao = 0
+
 
 //PEGAR O MOV DO MOUSE E MOVER A LARGURA DA LINHA COM ISSO E MOVER ISCA
 document.addEventListener('mousemove', (event) => {
@@ -80,9 +87,6 @@ function hud(){
 //timer
 function timerContando() {
     player.timer -= 1
-}
-function timerRecargaTubarao() {
-  tempoRecargaTubarao -= 1
 }
 
 
@@ -266,6 +270,7 @@ function peixeFuncao() {
         if (iscaObj.collide(peixin)) {
           if (!iscaObj.pescado)
           {
+            iscandoPeixe.play()
             switch (peixin.objetoNome) {
               case 'Pacu':
                 iscaObj.pescado = true
@@ -288,14 +293,10 @@ function peixeFuncao() {
                 console.log('Pegou bota')
                 break
               case 'Tubarao':
-                if(tempoRecargaTubarao < 0){
-                  tempoRecargaTubarao = 3
-                  player.iscas -= 1
-                  linha.height = 150
-                  linha.y = 10
-                  console.log("Tubarao comeu isca")
-                }
-
+                player.iscas -= 1
+                linha.height = 150
+                linha.y = 10
+                console.log("Tubarao comeu isca")
                 break
               case 'Lata':
                 iscaObj.pescado = true
@@ -306,15 +307,12 @@ function peixeFuncao() {
           
           // Caso ele tenha fisgado um peixe já, porém encostar num tubarão ele perderá o peixe e a isca
           else {
-            if(peixin.objetoNome == "Tubarao"){ 
-              if(tempoRecargaTubarao < 0){
-                tempoRecargaTubarao = 3
-                player.iscas -= 1
-                linha.height = 150
-                linha.y = 10
-                iscaObj.pescado = false
-                console.log("Tubarao comeu isca")
-              }
+            if(peixin.objetoNome == "Tubarao"){
+              player.iscas -= 1
+              linha.height = 150
+              linha.y = 10
+              iscaObj.pescado = false
+              console.log("Tubarao comeu isca")
             }
           }
         
@@ -343,11 +341,13 @@ function peixeFuncao() {
             player.iscas += 1
             iscaObj.pescado = false
             peixin.coletado = true
+            
           }
           else{
             player.peixesPescados += 1
             peixin.coletado = true
             iscaObj.pescado = false
+            peixeColetado.play()
           }
         }
       }
@@ -366,13 +366,19 @@ function peixeFuncao() {
 }
 
 function main() {
-  pincel.clearRect(0, 0, 1200, 720)
-  mapaDesenho()
-  peixeFuncao()
-  console.log(tempoRecargaTubarao)
+  var rodandoJogo = false
+  var gameOver = false
+  if(rodandoJogo){
+    pincel.clearRect(0, 0, 1200, 720)
+    mapaDesenho()
+    peixeFuncao()
+  } else if(gameOver){
+
+  }else{
+      telaMenu.desenha();
+  }
 }
 criarCaranguejo()
 setInterval(timerContando, 1000)
-setInterval(timerRecargaTubarao, 1000)
 setInterval(criarPeixe, 2500)
 setInterval(main, 10)
