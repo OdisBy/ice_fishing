@@ -25,7 +25,7 @@ var linhaFix = new Img(
 var iscandoPeixe = new Audio('sound/iscandopeixe.wav')
 var peixeColetado = new Audio('sound/peixeguardado.wav')
 var caranguejoSound = new Audio('sound/caranguejo.wav')
-var tubaraoSound = new Audio('sound/tubarao.wav')
+var tubaraoSound = new Audio('sound/tubarao.mp3')
 var menuMusic = new Audio('sound/menu.wav')
 menuMusic.loop = true
 var inGameMusic = new Audio('sound/inGame.mp3')
@@ -36,14 +36,19 @@ gameOverMusic.loop = true
 
 
 //MENU
-var telaMenu = new Obj(0, 0, 1200, 720, 0, 'Assets/menu.png')
+var telaMenu = new Img(0, 0, 1200, 720, 'Assets/menu.png')
+var telaInstrucoes = new Img(0, 0, 1200, 720, 'Assets/instrucoes.png')
+//game over
+var gameOverTela = new Img(0, 0, 1200, 720, 'Assets/gameOver.png')
 
 //ICON
 var minhocaIcon = new Img(0, 0, 120, 120, 'Assets/iconminhoca.png')
 
+
 //VARIAVEIS DO JOGO
 var rodandoJogo = false
 var gameOver = false
+var instrucoes = false
 const peixesVivos = []
 const caranguejoArray = []
 
@@ -52,8 +57,16 @@ var gerarPeixe = new invocarPeixe()
 
 //Buttons
 //Menu inicial
-var jogarButton = new Button(940, 615, 205, 57, 'Assets/empty.png')
-var gameOverButton = new Button(490, 500, 230, 70, 'Assets/redAsset.jpg')
+
+//TELA MENU
+var jogarButton = new Button(465, 429, 278, 53, 'Assets/empty.png')
+var instrucoesButton = new Button(465, 525, 278, 53, 'Assets/empty.png')
+
+//TELA DE INSTRUCOES
+var jogarInstrucoesButton = new Button(940, 615, 205, 57, 'Assets/empty.png')
+
+//GAME OVER TELA
+var gameOverButton = new Button(468, 418, 279, 55, 'Assets/empty.png')
 
 
 //PEGAR O MOV DO MOUSE E MOVER A LARGURA DA LINHA COM ISSO E MOVER ISCA
@@ -61,14 +74,17 @@ document.addEventListener('mousemove', (event) => {
   var x = event.offsetX;
   var y = event.offsetY;
 
-  if(linha.height >= 150 && linha.height <= 700){
-    linha.height = y
-  }else if(linha.height < 150){
-    linha.height = 150
-  }else if(linha.height > 700){
-    linha.height = 700
+  if(player.tempoTubarao <= 0){
+    if(linha.height >= 150 && linha.height <= 700){
+      linha.height = y
+    }else if(linha.height < 150){
+      linha.height = 150
+    }else if(linha.height > 700){
+      linha.height = 700
+    }
+    // console.log(x, y)
   }
-  iscaObj.y = linha.y + linha.height - 20
+
 });
 
 document.addEventListener('click', (event) => {
@@ -77,24 +93,43 @@ document.addEventListener('click', (event) => {
 
   if(!rodandoJogo && !gameOver){
       //MENU
-      if(jogarButton.clickButton(x, y)){
+      if(instrucoes){
+        if(jogarInstrucoesButton.clickButton(x, y)){
           player.timer = 300
-          player.tempoTubarao = 5
+          player.tempoTubarao = 0
           player.score = 0
+          player.iscas = 3
+          gerarPeixe.peixesVivos.length = 0
           gerarPeixe.gerarPeixe()
           rodandoJogo = true;
           menuMusic.pause()
       }
+    }else{
+      if(jogarButton.clickButton(x, y)){
+          player.timer = 300
+          player.tempoTubarao = 0
+          player.score = 0
+          player.iscas = 3
+          gerarPeixe.peixesVivos.length = 0
+          gerarPeixe.gerarPeixe()
+          rodandoJogo = true;
+          menuMusic.pause()
+      }
+      if(instrucoesButton.clickButton(x, y)){
+        instrucoes = true
+      }
+    }
   }
-  if(gameOver){
+  else if(gameOver){
+    //game over
+    //volta pro menu
     if(gameOverButton.clickButton(x, y)){
       player.timer = 300
-      player.tempoTubarao = 5
       player.score = 0
-      gerarPeixe.gerarPeixe()
-      gameOver = false
-      rodandoJogo = true
+      player.iscas = 3
       gerarPeixe.peixesVivos.length = 0
+      gameOver = false
+      rodandoJogo = false
       gameOverMusic.pause()
     }
   }
@@ -131,16 +166,12 @@ function hud(){
 
 function desenhaGameOver(){
   pincel.clearRect(0, 0, 1200, 750)
-  
-  pincel.fillStyle = '#E5FFFF'
-  pincel.fillRect(0, 0, 1200, 750)
+
+  gameOverTela.desenha()
 
   pincel.fillStyle = '#000000'
   pincel.font = "60px Arial";
-  pincel.fillText("Fim de jogo!", 450, 150)
-  pincel.fillText("Score: " + player.score, 500 , 350)
-  gameOverButton.desenha()
-  pincel.fillText("Jogar novamente", 500, 550, 200, 200)
+  pincel.fillText(player.score, 675 , 286)
 }
 
 
@@ -160,6 +191,10 @@ function timerContando() {
       rodandoJogo = false
       inGameMusic.pause()
     }
+
+    if(player.animacaoDano > -1){
+      player.animacaoDano -= 1
+    }
 }
 
 function getNovoPeixe() {
@@ -173,11 +208,17 @@ function main() {
     pincel.clearRect(0, 0, 1200, 720)
     mapaDesenho()
     gerarPeixe.peixeFuncao()
+    iscaObj.y = linha.y + linha.height - 20
+    console.log(linha.height)
   } else if(gameOver){
     desenhaGameOver();
     gameOverMusic.play()
   }else{
-    telaMenu.desenha();
+    if(instrucoes){
+      telaInstrucoes.desenha();
+    }else{
+      telaMenu.desenha();
+    }
     menuMusic.play()
   }
   

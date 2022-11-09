@@ -4,6 +4,8 @@ class Obj {
   pescado = false
   coletado = false
   score = 0
+  animacaoDano = 3
+  explodindo = false
 
   tiposPossiveisObjeto = ['Peixes', 'Lixos', 'Inimigos', 'Minhocas']
   peixesPossiveis = ['Salmao', 'Tilapia', 'Pacu']
@@ -46,6 +48,14 @@ class Obj {
     img.src = imagemPescado
     pincel.drawImage(img, x, y + 20, this.height, this.width)
   }
+
+  sofreuDano() {
+    var img = new Image()
+    img.src = 'Assets/dano.png'
+    if(player.animacaoDano > 0){
+      pincel.drawImage(img, this.x, this.y, this.width, this.height)
+    }
+  }
 }
 
 class Img {
@@ -87,7 +97,7 @@ class Player extends Obj {
   peixesPescados = 0
   timer = 300
   iscas = 3
-  tempoTubarao = 5
+  tempoTubarao = 0
 
   ret = ''
 
@@ -241,7 +251,7 @@ class invocarPeixe {
     this.peixeMomento = this.instanciaPeixe(qualPeixe)
     this.peixesVivos.push(this.peixeMomento)
 
-    //SEM INIMIGO
+    //COM INIMIGO
     if (this.generateRandomIntegerInRange(0, 1) == 1) {
       //Atras
       if (this.generateRandomIntegerInRange(0, 1) == 0) {
@@ -326,6 +336,18 @@ class invocarPeixe {
   peixeFuncao() {
     // Para manipular cada peixe no array que foi preenchido pela função invocarPeixe.
     this.peixesVivos.forEach((peixin) => {
+      if(peixin.explodindo){
+        console.log("explodindo")
+        if(player.animacaoDano >= 0){
+          peixin.sofreuDano()
+          console.log("animacao")
+        }else{
+          peixin.explodindo = false
+          peixin.x = 30000
+          console.log("parou de explodir!")
+        }
+        return
+      }
       // console.log(peixin)
       // Verfica se o peixe já foi coletado ou não. Caso não ele desenhará e chamará a função movimentação dos peixes que ainda não foram coletados, escolhi assim pois não achei como destroir um objeto depois de ser pego, então os que forem pegos irão passar por esse if e não serão desenhados e nem se movimentaram
       if (!peixin.coletado) {
@@ -361,13 +383,15 @@ class invocarPeixe {
                   break
                 case 'Tubarao':
                   if (player.tempoTubarao <= 0) {
-                    player.tempoTubarao = 5
+                    player.tempoTubarao = 3
                     iscaObj.pescado = false
                     player.iscas -= 1
                     linha.height = 150
                     linha.y = 10
                     tubaraoSound.play()
                     console.log('Tubarao comeu isca')
+                    peixin.explodindo = true
+                    player.animacaoDano = 3
                   }
                   console.log('Tubarao comeu isca')
                   break
@@ -382,13 +406,15 @@ class invocarPeixe {
             else {
               if (peixin.objetoNome == 'Tubarao') {
                 if (player.tempoTubarao <= 0) {
-                  player.tempoTubarao = 5
+                  player.tempoTubarao = 3
                   iscaObj.pescado = false
                   player.iscas -= 1
                   linha.height = 150
                   linha.y = 10
                   tubaraoSound.play()
                   console.log('Tubarao comeu isca')
+                  peixin.explodindo = true
+                  player.animacaoDano = 3
                 }
               }
             }
@@ -420,22 +446,28 @@ class invocarPeixe {
               peixeColetado.play()
             }
           }
+          if(linha.height >= 600){
+            linha.height = 600
+          }
         }
       }
 
       if (peixin.objetoNome == 'Caranguejo') {
         if (linha.height > 255 && peixin.x == 550) {
           if (player.tempoTubarao <= 0) {
-            player.tempoTubarao = 5
+            player.tempoTubarao = 3
             player.iscas -= 1
             linha.height = 150
             linha.y = 10
             iscaObj.pescado = false
             caranguejoSound.play()
             console.log('caranguejo comeu isca')
+            peixin.explodindo = true
+            player.animacaoDano = 3
           }
         }
       }
+
     })
   }
 }
