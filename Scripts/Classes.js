@@ -366,9 +366,6 @@ class invocarPeixe {
         }
         return
       }
-      if(peixin.objetoNome == 'Tubarao'){
-        peixin.desenhaBordaCol()
-      }
       // console.log(peixin)
       // Verfica se o peixe já foi coletado ou não. Caso não ele desenhará e chamará a função movimentação dos peixes que ainda não foram coletados, escolhi assim pois não achei como destroir um objeto depois de ser pego, então os que forem pegos irão passar por esse if e não serão desenhados e nem se movimentaram
       if (!peixin.coletado) {
