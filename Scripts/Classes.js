@@ -56,6 +56,13 @@ class Obj {
       pincel.drawImage(img, this.x, this.y, this.width, this.height)
     }
   }
+
+  desenhaBordaCol() {
+    pincel.beginPath()
+    pincel.rect(this.x, this.y + 28, this.width, this.height)
+    pincel.stroke();
+  }
+
 }
 
 class Img {
@@ -132,8 +139,8 @@ class LinhaVaraPesca extends Obj {
     if (
       this.x < obj.x + obj.width &&
       this.x + obj.width > obj.x &&
-      this.y < obj.y + obj.height &&
-      this.y + obj.height > obj.y
+      (this.y + 28) < (obj.y + 28) + obj.height &&
+      (this.y + 28) + obj.height > (obj.y + 28)
     ) {
       return true
     } else {
@@ -161,16 +168,30 @@ class Isca extends Obj {
   // image = "Assets/minhoca.png"
 
   collide(obj) {
-    if (
+    if(obj.objetoNome != "Tubarao"){
+    if (  
       this.x < obj.x + obj.width &&
       this.x + obj.width > obj.x &&
-      this.y < obj.y + obj.height &&
-      this.y + obj.height > obj.y
+      (this.y + 28) < (obj.y + 28) + obj.height &&
+      (this.y + 28) + obj.height > (obj.y + 28)
     ) {
       return true
     } else {
       return false
     }
+  }else {
+    if (  
+      this.x < (obj.x + 10) + (obj.width - 20) &&
+      this.x + (obj.width - 20) > (obj.x + 10) &&
+      (this.y + 28) < (obj.y + 33) + (obj.height - 10) &&
+      (this.y + 28) + (obj.height - 10) > (obj.y + 33)
+    ) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   }
 }
 
@@ -337,16 +358,16 @@ class invocarPeixe {
     // Para manipular cada peixe no array que foi preenchido pela função invocarPeixe.
     this.peixesVivos.forEach((peixin) => {
       if(peixin.explodindo){
-        console.log("explodindo")
         if(player.animacaoDano >= 0){
           peixin.sofreuDano()
-          console.log("animacao")
         }else{
           peixin.explodindo = false
           peixin.x = 30000
-          console.log("parou de explodir!")
         }
         return
+      }
+      if(peixin.objetoNome == 'Tubarao'){
+        peixin.desenhaBordaCol()
       }
       // console.log(peixin)
       // Verfica se o peixe já foi coletado ou não. Caso não ele desenhará e chamará a função movimentação dos peixes que ainda não foram coletados, escolhi assim pois não achei como destroir um objeto depois de ser pego, então os que forem pegos irão passar por esse if e não serão desenhados e nem se movimentaram
@@ -382,6 +403,7 @@ class invocarPeixe {
                   console.log('Pegou bota')
                   break
                 case 'Tubarao':
+                  console.log((iscaObj.y + 28) + " : " + (peixin.y + 28))
                   if (player.tempoTubarao <= 0) {
                     player.tempoTubarao = 3
                     iscaObj.pescado = false

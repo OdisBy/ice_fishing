@@ -75,7 +75,7 @@ document.addEventListener('mousemove', (event) => {
   var y = event.offsetY;
 
   if(player.tempoTubarao <= 0){
-    if(linha.height >= 150 && linha.height <= 700){
+    if(linha.height >= 150 && linha.height <= 700 && y >= 150 && y <= 700){
       linha.height = y
     }else if(linha.height < 150){
       linha.height = 150
@@ -209,7 +209,6 @@ function main() {
     mapaDesenho()
     gerarPeixe.peixeFuncao()
     iscaObj.y = linha.y + linha.height - 20
-    console.log(linha.height)
   } else if(gameOver){
     desenhaGameOver();
     gameOverMusic.play()
